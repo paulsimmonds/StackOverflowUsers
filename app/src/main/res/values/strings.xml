@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">stackoverflowtest</string>
+    <string name="user_profile_image_for">Profile image for %1$s</string>
+    <string name="user_reputation">Reputation: %1$d</string>
+    <string name="user_unfollow">Unfollow</string>
+    <string name="user_follow">Follow</string>
+</resources>
