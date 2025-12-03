@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.magictorch.stackoverflowtest.R
 import com.magictorch.stackoverflowtest.domain.model.User
-import com.magictorch.stackoverflowtest.presentation.userlist.image.ImageLoader
+import com.magictorch.stackoverflowtest.presentation.image.ImageLoader
 import com.magictorch.stackoverflowtest.ui.theme.StackoverflowtestTheme
 import org.koin.compose.koinInject
 

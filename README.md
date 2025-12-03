@@ -43,9 +43,9 @@ This design has several key advantages:
 
 ## 3. Abstracting the ImageLoader
 
-Directly using an image loading library like Coil or Glide in Composeables creates a hard dependency and mixes concerns. To avoid this, I've abstracted the image loading functionality behind an `ImageLoader` interface, which is defined in the domain layer.
+Directly using an image loading library like Coil or Glide in Composeables creates a hard dependency and mixes concerns. To avoid this, I've abstracted the image loading functionality behind an `ImageLoader` interface.
 
-- **The Interface (`domain/ui/image/ImageLoader.kt`)**: Defines a generic contract for loading an image.
+- **The Interface ('presentation/image/ImageLoader.kt')**: Defines a generic contract for loading an image.
 - **The Implementation (`platform/CoilImageLoader.kt`)**: Provides a concrete implementation of the interface using Coil.
 
 This approach allows easy swapping of the image loading library in the future without changing a single line of UI code. It also makes the UI components more testable, as you can provide a fake `ImageLoader` in the previews and tests.

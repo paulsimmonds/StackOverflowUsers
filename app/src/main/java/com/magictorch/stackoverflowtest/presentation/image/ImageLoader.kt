@@ -1,4 +1,4 @@
-package com.magictorch.stackoverflowtest.presentation.userlist.image
+package com.magictorch.stackoverflowtest.presentation.image
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier

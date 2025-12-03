@@ -9,7 +9,7 @@ import com.magictorch.stackoverflowtest.domain.usecase.ToggleFollowUseCase
 import com.magictorch.stackoverflowtest.platform.datasource.DataStoreFollowLocalDataSource
 import com.magictorch.stackoverflowtest.platform.presentation.image.CoilImageLoader
 import com.magictorch.stackoverflowtest.presentation.userlist.UserListViewModel
-import com.magictorch.stackoverflowtest.presentation.userlist.image.ImageLoader
+import com.magictorch.stackoverflowtest.presentation.image.ImageLoader
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 import retrofit2.Retrofit

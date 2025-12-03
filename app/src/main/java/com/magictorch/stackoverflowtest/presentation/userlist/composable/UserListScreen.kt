@@ -17,7 +17,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.magictorch.stackoverflowtest.domain.model.User
 import com.magictorch.stackoverflowtest.presentation.userlist.UserListUiState
 import com.magictorch.stackoverflowtest.presentation.userlist.UserListViewModel
-import com.magictorch.stackoverflowtest.presentation.userlist.image.ImageLoader
+import com.magictorch.stackoverflowtest.presentation.image.ImageLoader
 import com.magictorch.stackoverflowtest.ui.theme.StackoverflowtestTheme
 import kotlinx.serialization.Serializable
 import org.koin.compose.koinInject

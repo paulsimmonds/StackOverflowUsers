@@ -3,7 +3,7 @@ package com.magictorch.stackoverflowtest.platform.presentation.image
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import coil.compose.AsyncImage
-import com.magictorch.stackoverflowtest.presentation.userlist.image.ImageLoader
+import com.magictorch.stackoverflowtest.presentation.image.ImageLoader
 
 class CoilImageLoader : ImageLoader {
     @Composable
