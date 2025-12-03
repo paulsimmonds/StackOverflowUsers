@@ -36,9 +36,9 @@ class UserRepositoryImplTest {
         val followState = MutableStateFlow<Set<String>>(emptySet())
         every { local.followedIds } returns followState
         coEvery { local.toggleFollow(any()) } answers {
-            val id = arg<String>(0)
+            val id = arg<Int>(0)
             val newSet = followState.value.toMutableSet()
-            if (newSet.contains(id)) newSet.remove(id) else newSet.add(id)
+            if (newSet.contains(id.toString())) newSet.remove(id.toString()) else newSet.add(id.toString())
             followState.value = newSet
         }
 
@@ -82,9 +82,9 @@ class UserRepositoryImplTest {
         val followState = MutableStateFlow<Set<String>>(emptySet())
         every { local.followedIds } returns followState
         coEvery { local.toggleFollow(any()) } answers {
-            val id = arg<String>(0)
+            val id = arg<Int>(0)
             val newSet = followState.value.toMutableSet()
-            if (newSet.contains(id)) newSet.remove(id) else newSet.add(id)
+            if (newSet.contains(id.toString())) newSet.remove(id.toString()) else newSet.add(id.toString())
             followState.value = newSet
         }
 
@@ -119,7 +119,7 @@ class UserRepositoryImplTest {
 
         repo.toggleFollow(42)
 
-        coVerify { local.toggleFollow("42") }
+        coVerify { local.toggleFollow(42) }
     }
 }
 

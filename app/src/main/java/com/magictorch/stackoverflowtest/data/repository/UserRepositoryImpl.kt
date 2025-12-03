@@ -27,6 +27,6 @@ class UserRepositoryImpl(
         }
 
     override suspend fun toggleFollow(userId: Int) {
-        followLocalDataSource.toggleFollow(userId.toString())
+        followLocalDataSource.toggleFollow(userId)
     }
 }
