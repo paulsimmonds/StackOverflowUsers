@@ -46,7 +46,7 @@ fun UserListContent(
     onFollowClick: (User) -> Unit,
     imageLoader: ImageLoader,
 ) {
-    when (val state = uiState) {
+    when (uiState) {
         is UserListUiState.Loading -> {
             Box(
                 modifier = Modifier.fillMaxSize(),
@@ -58,7 +58,7 @@ fun UserListContent(
 
         is UserListUiState.Success -> {
             LazyColumn(modifier = Modifier.fillMaxSize()) {
-                items(state.users) { user ->
+                items(uiState.users) { user ->
                     UserListItem(
                         user = user,
                         onFollowClick = { onFollowClick(user) },
@@ -73,7 +73,7 @@ fun UserListContent(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                Text(text = state.message)
+                Text(text = uiState.message)
             }
         }
     }
