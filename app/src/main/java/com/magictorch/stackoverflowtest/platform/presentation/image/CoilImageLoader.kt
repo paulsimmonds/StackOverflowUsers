@@ -10,7 +10,7 @@ class CoilImageLoader : ImageLoader {
     override fun Load(
         model: Any?,
         contentDescription: String?,
-        modifier: Modifier
+        modifier: Modifier,
     ) {
         AsyncImage(
             model = model,

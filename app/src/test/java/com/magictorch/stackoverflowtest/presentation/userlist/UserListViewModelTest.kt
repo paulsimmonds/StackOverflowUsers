@@ -3,99 +3,84 @@ package com.magictorch.stackoverflowtest.presentation.userlist
 import app.cash.turbine.test
 import com.magictorch.stackoverflowtest.domain.model.User
 import com.magictorch.stackoverflowtest.domain.usecase.GetUserListUseCase
-import com.magictorch.stackoverflowtest.domain.usecase.ToggleFollowUseCase
 import io.mockk.coEvery
-import io.mockk.coVerify
 import io.mockk.mockk
-import io.mockk.verify
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import org.junit.After
+import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
+import kotlin.test.assertIs
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class UserListViewModelTest {
 
     private val mockGetUserListUseCase = mockk<GetUserListUseCase>()
-    private val mockToggleFollowUseCase = mockk<ToggleFollowUseCase>(relaxed = true)
+    private val testDispatcher = StandardTestDispatcher()
 
     private val sampleUsers = listOf(
-        User(id = 1, name = "Alice", reputation = 10, profileImageUrl = null, isFollowing = false),
-        User(id = 2, name = "Bob", reputation = 20, profileImageUrl = null, isFollowing = true)
+        User(id = 1, name = "Alice", reputation = 10, profileImageUrl = null),
+        User(id = 2, name = "Bob", reputation = 20, profileImageUrl = null),
     )
 
-    @Test
-    fun `loadUsers sets uiState to Success when use case emits users`() = runTest {
-        coEvery { mockGetUserListUseCase() } returns flow { emit(sampleUsers) }
+    @Before
+    fun setup() {
+        Dispatchers.setMain(testDispatcher)
+    }
 
-        val viewModel = UserListViewModel(mockGetUserListUseCase, mockToggleFollowUseCase)
+    @After
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
+
+    @Test
+    fun `uiState initially emits Idle then Loading then Success`() = runTest {
+        coEvery { mockGetUserListUseCase("") } returns flowOf(sampleUsers)
+
+        val viewModel = UserListViewModel(mockGetUserListUseCase)
 
         viewModel.uiState.test {
-            // Trigger loading
-            viewModel.loadUsers()
-
-            val first = awaitItem()
-            assertTrue(first is UserListUiState.Loading)
-
-            val second = awaitItem()
-            assertTrue(second is UserListUiState.Success)
-            assertEquals(sampleUsers, second.users)
-
-            cancelAndIgnoreRemainingEvents()
+            // Initial value from stateIn
+            assertEquals(UserListUiState.Idle, awaitItem())
+            
+            // Allow the flatMapLatest flow to run
+            advanceUntilIdle()
+            
+            assertIs<UserListUiState.Loading>(awaitItem())
+            val successItem = awaitItem()
+            assertIs<UserListUiState.Success>(successItem)
+            assertEquals(sampleUsers, successItem.users)
         }
     }
 
     @Test
-    fun `loadUsers sets uiState to Error when use case throws`() = runTest {
-        val exception = RuntimeException("API failed")
-        coEvery { mockGetUserListUseCase() } returns flow { throw exception }
+    fun `search query change triggers new use case call`() = runTest {
+        coEvery { mockGetUserListUseCase("") } returns flowOf(sampleUsers)
+        coEvery { mockGetUserListUseCase("al") } returns flowOf(listOf(sampleUsers[0]))
 
-        val viewModel = UserListViewModel(mockGetUserListUseCase, mockToggleFollowUseCase)
-
-        viewModel.uiState.test {
-            // Trigger loading
-            viewModel.loadUsers()
-
-            val first = awaitItem()
-            assertTrue(first is UserListUiState.Loading)
-
-            val second = awaitItem()
-            assertTrue(second is UserListUiState.Error)
-            assertEquals("API failed", second.message)
-
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
-    @Test
-    fun `loadUsers does not reload if already Success`() = runTest {
-        coEvery { mockGetUserListUseCase() } returns flow { emit(sampleUsers) }
-
-        val viewModel = UserListViewModel(mockGetUserListUseCase, mockToggleFollowUseCase)
+        val viewModel = UserListViewModel(mockGetUserListUseCase)
 
         viewModel.uiState.test {
-            viewModel.loadUsers()
-            awaitItem() // Loading
-            awaitItem() // Success
+            assertEquals(UserListUiState.Idle, awaitItem())
+            
+            advanceUntilIdle()
+            assertIs<UserListUiState.Loading>(awaitItem())
+            assertIs<UserListUiState.Success>(awaitItem()) // initial ""
+
+            viewModel.onSearchQueryChange("al")
+            
+            advanceUntilIdle()
+            assertIs<UserListUiState.Loading>(awaitItem())
+            val filteredSuccess = awaitItem() as UserListUiState.Success
+            assertEquals(1, filteredSuccess.users.size)
+            assertEquals("Alice", filteredSuccess.users[0].name)
         }
-
-        // Call again — should not re-trigger
-        viewModel.loadUsers()
-
-        verify(exactly = 1) { mockGetUserListUseCase() }
-    }
-
-    @Test
-    fun `toggleFollow calls ToggleFollowUseCase with correct id`() = runTest {
-        coEvery { mockGetUserListUseCase() } returns flow { emit(emptyList()) }
-
-        val viewModel = UserListViewModel(mockGetUserListUseCase, mockToggleFollowUseCase)
-        val user = User(id = 42, name = "Charlie", reputation = 0, profileImageUrl = null, isFollowing = false)
-
-        viewModel.toggleFollow(user)
-
-        coVerify { mockToggleFollowUseCase(42) }
     }
 }

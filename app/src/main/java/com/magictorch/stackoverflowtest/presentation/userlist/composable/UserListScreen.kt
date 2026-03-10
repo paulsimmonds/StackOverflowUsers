@@ -1,23 +1,39 @@
 package com.magictorch.stackoverflowtest.presentation.userlist.composable
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.magictorch.stackoverflowtest.R
 import com.magictorch.stackoverflowtest.domain.model.User
+import com.magictorch.stackoverflowtest.presentation.image.ImageLoader
 import com.magictorch.stackoverflowtest.presentation.userlist.UserListUiState
 import com.magictorch.stackoverflowtest.presentation.userlist.UserListViewModel
-import com.magictorch.stackoverflowtest.presentation.image.ImageLoader
 import com.magictorch.stackoverflowtest.ui.theme.StackoverflowtestTheme
 import kotlinx.serialization.Serializable
 import org.koin.compose.koinInject
@@ -25,55 +41,108 @@ import org.koin.compose.koinInject
 @Composable
 fun UserListScreen(
     viewModel: UserListViewModel,
-    onFollowClick: (User) -> Unit,
+    onNavigateToUserDetail: (Int) -> Unit,
     imageLoader: ImageLoader = koinInject(),
 ) {
-
-    LaunchedEffect(Unit) {
-        viewModel.loadUsers()
-    }
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
 
     UserListContent(
-        uiState = viewModel.uiState.collectAsState().value,
-        onFollowClick = onFollowClick,
+        uiState = uiState,
+        searchQuery = searchQuery,
+        onSearchQueryChange = viewModel::onSearchQueryChange,
+        onRefreshClick = viewModel::loadUsers,
+        onNavigateToUserDetail = onNavigateToUserDetail,
         imageLoader = imageLoader
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserListContent(
     uiState: UserListUiState,
-    onFollowClick: (User) -> Unit,
+    searchQuery: String,
+    onSearchQueryChange: (String) -> Unit,
+    onRefreshClick: () -> Unit,
+    onNavigateToUserDetail: (Int) -> Unit,
     imageLoader: ImageLoader,
 ) {
-    when (uiState) {
-        is UserListUiState.Loading -> {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
-        }
+    val focusManager = LocalFocusManager.current
 
-        is UserListUiState.Success -> {
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
-                items(uiState.users) { user ->
-                    UserListItem(
-                        user = user,
-                        onFollowClick = { onFollowClick(user) },
-                        imageLoader = imageLoader
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(stringResource(R.string.app_name)) }
+            )
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = onSearchQueryChange,
+                    modifier = Modifier.weight(1f),
+                    label = { Text("Search by name") },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                    keyboardActions = KeyboardActions(
+                        onSearch = {
+                            focusManager.clearFocus()
+                            onRefreshClick()
+                        }
                     )
+                )
+                Button(
+                    onClick = {
+                        focusManager.clearFocus()
+                        onRefreshClick()
+                    },
+                    modifier = Modifier.padding(start = 8.dp)
+                ) {
+                    Text("SEARCH")
                 }
             }
-        }
 
-        is UserListUiState.Error -> {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(text = uiState.message)
+            when (uiState) {
+                is UserListUiState.Loading -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                }
+
+                is UserListUiState.Success -> {
+                    LazyColumn(modifier = Modifier.fillMaxSize()) {
+                        items(uiState.users, key = { it.id }) { user ->
+                            UserListItem(
+                                user = user,
+                                onNavigateToUserDetail = onNavigateToUserDetail, imageLoader = imageLoader
+                            )
+                        }
+                    }
+                }
+
+                is UserListUiState.Error -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(text = uiState.message)
+                    }
+                }
+
+                else -> {}
             }
         }
     }
@@ -87,9 +156,9 @@ class UiStatePreviewProvider : PreviewParameterProvider<UserListUiState> {
         UserListUiState.Success(
             users = List(5) {
                 User(
-                    id = 1,
-                    name = "Test",
-                    reputation = 100,
+                    id = it,
+                    name = "User $it",
+                    reputation = 100 * it,
                     profileImageUrl = null
                 )
             }
@@ -107,7 +176,10 @@ private fun UserListScreenSuccessPreview(
     StackoverflowtestTheme {
         UserListContent(
             uiState = uiState,
-            onFollowClick = {},
+            searchQuery = "",
+            onSearchQueryChange = {},
+            onRefreshClick = {},
+            onNavigateToUserDetail = {},
             imageLoader = FakeImageLoader()
         )
     }

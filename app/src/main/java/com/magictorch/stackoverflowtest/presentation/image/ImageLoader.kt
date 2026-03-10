@@ -8,6 +8,6 @@ interface ImageLoader {
     fun Load(
         model: Any?,
         contentDescription: String?,
-        modifier: Modifier
+        modifier: Modifier,
     )
 }

@@ -1,14 +1,17 @@
 package com.magictorch.stackoverflowtest.presentation.userlist.composable
 
+import androidx.compose.foundation.LocalIndication
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -24,13 +27,19 @@ import org.koin.compose.koinInject
 @Composable
 fun UserListItem(
     user: User,
-    onFollowClick: () -> Unit,
     imageLoader: ImageLoader = koinInject(),
+    onNavigateToUserDetail: (Int) -> Unit,
 ) {
     Row(
         modifier = Modifier
-            .padding(20.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .padding(20.dp)
+            .clickable(
+                indication = LocalIndication.current,
+                interactionSource = remember { MutableInteractionSource() },
+                enabled = true,
+                onClick = { onNavigateToUserDetail(user.id) }
+            ),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         imageLoader.Load(
             model = user.profileImageUrl,
@@ -50,14 +59,6 @@ fun UserListItem(
                 text = stringResource(R.string.user_reputation, user.reputation)
             )
         }
-        Spacer(modifier = Modifier.width(8.dp))
-        Button(
-            modifier = Modifier
-                .padding(10.dp),
-            onClick = onFollowClick,
-        ) {
-            Text(if (user.isFollowing) stringResource(R.string.user_unfollow) else stringResource(R.string.user_follow))
-        }
     }
 }
 
@@ -70,7 +71,7 @@ class FakeImageLoader : ImageLoader {
 
 @Preview(showBackground = true)
 @Composable
-private fun UserListItemPreviewFollowing() {
+private fun UserListItemPreview() {
     StackoverflowtestTheme {
         UserListItem(
             user = User(
@@ -79,8 +80,8 @@ private fun UserListItemPreviewFollowing() {
                 reputation = 100,
                 profileImageUrl = null
             ),
-            onFollowClick = {},
-            imageLoader = FakeImageLoader()
+            onNavigateToUserDetail = {},
+            imageLoader = FakeImageLoader(),
         )
     }
 }

@@ -42,7 +42,7 @@ data class UserResponse(
     @SerializedName("profile_image")
     val profileImage: String?,
     @SerializedName("display_name")
-    val displayName: String
+    val displayName: String,
 )
 
 data class BadgeCounts(
@@ -51,5 +51,5 @@ data class BadgeCounts(
     @SerializedName("silver")
     val silver: Int,
     @SerializedName("gold")
-    val gold: Int
+    val gold: Int,
 )

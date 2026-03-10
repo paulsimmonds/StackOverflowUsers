@@ -1,9 +1,11 @@
 package com.magictorch.stackoverflowtest.domain.repository
 
 import com.magictorch.stackoverflowtest.domain.model.User
+import com.magictorch.stackoverflowtest.domain.model.UserDetail
 import kotlinx.coroutines.flow.Flow
 
 interface UserRepository {
     fun getUsers(): Flow<List<User>>
-    suspend fun toggleFollow(userId: Int)
+
+    fun getUserDetail(userId: Int): Flow<UserDetail>
 }

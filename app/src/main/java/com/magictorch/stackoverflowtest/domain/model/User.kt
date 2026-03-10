@@ -5,5 +5,4 @@ data class User(
     val name: String,
     val reputation: Int,
     val profileImageUrl: String?,
-    val isFollowing: Boolean = false
 )
