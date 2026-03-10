@@ -7,22 +7,27 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface StackOverflowApiService {
-    @GET("/users")
+    @GET("users")
     suspend fun getUsers(
         @Query("page") page: Int = 1,
         @Query("pagesize") pageSize: Int = 20,
         @Query("order") order: String = "desc",
         @Query("sort") sort: String = "reputation",
         @Query("site") site: String = "stackoverflow",
+        @Query("inname") inname: String? = null,
     ): UsersResponse
 
-    @GET("/users/{id}?order=desc&sort=reputation&site=stackoverflow")
+    @GET("users/{id}")
     suspend fun getUserById(
         @Path("id") id: Int,
+        @Query("order") order: String = "desc",
+        @Query("sort") sort: String = "reputation",
+        @Query("site") site: String = "stackoverflow",
     ): UsersResponse
 
-    @GET("/users/{id}/top-tags?site=stackoverflow")
+    @GET("users/{id}/top-tags")
     suspend fun getTopTags(
         @Path("id") id: Int,
+        @Query("site") site: String = "stackoverflow",
     ): TagsResponse
 }

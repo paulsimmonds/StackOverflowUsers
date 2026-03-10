@@ -6,19 +6,28 @@ import com.magictorch.stackoverflowtest.data.dto.tag.TagsResponse
 import com.magictorch.stackoverflowtest.data.dto.user.BadgeCounts
 import com.magictorch.stackoverflowtest.data.dto.user.UserResponse
 import com.magictorch.stackoverflowtest.data.dto.user.UsersResponse
+import com.magictorch.stackoverflowtest.domain.util.StringDecoder
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Before
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class UserRepositoryImplTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
+    private val mockStringDecoder = mockk<StringDecoder>()
+
+    @Before
+    fun setup() {
+        every { mockStringDecoder.decodeHtml(any()) } answers { firstArg() }
+    }
 
     @Test
     fun `getUsers maps API users correctly`() = runTest(testDispatcher) {
@@ -34,7 +43,7 @@ class UserRepositoryImplTest {
 
         coEvery { api.getUsers() } returns apiUsers
 
-        val repo = UserRepositoryImpl(api)
+        val repo = UserRepositoryImpl(api, mockStringDecoder)
 
         // Act
         val users = repo.getUsers().first()
@@ -56,7 +65,7 @@ class UserRepositoryImplTest {
         coEvery { api.getUserById(userId) } returns apiUsers
         coEvery { api.getTopTags(userId) } returns apiTags
 
-        val repo = UserRepositoryImpl(api)
+        val repo = UserRepositoryImpl(api, mockStringDecoder)
 
         // Act
         val detail = repo.getUserDetail(userId).first()

@@ -7,10 +7,7 @@ import kotlinx.coroutines.flow.map
 
 class GetUserListUseCase(private val userRepository: UserRepository) {
     operator fun invoke(searchQuery: String = ""): Flow<List<User>> =
-        userRepository.getUsers().map { users ->
-            users
-                .filter { it.name.contains(searchQuery, ignoreCase = true) }
-                .sortedBy { it.name }
-                .take(20)
+        userRepository.getUsers(searchQuery.ifBlank { null }).map { users ->
+            users.sortedBy { it.name }
         }
 }

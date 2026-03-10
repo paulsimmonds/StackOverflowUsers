@@ -5,7 +5,9 @@ import com.magictorch.stackoverflowtest.data.repository.UserRepositoryImpl
 import com.magictorch.stackoverflowtest.domain.repository.UserRepository
 import com.magictorch.stackoverflowtest.domain.usecase.GetUserDetailUseCase
 import com.magictorch.stackoverflowtest.domain.usecase.GetUserListUseCase
+import com.magictorch.stackoverflowtest.domain.util.StringDecoder
 import com.magictorch.stackoverflowtest.platform.presentation.image.CoilImageLoader
+import com.magictorch.stackoverflowtest.platform.util.AndroidStringDecoder
 import com.magictorch.stackoverflowtest.presentation.image.ImageLoader
 import com.magictorch.stackoverflowtest.presentation.userdetail.UserDetailViewModel
 import com.magictorch.stackoverflowtest.presentation.userlist.UserListViewModel
@@ -25,7 +27,7 @@ val domainModule = module {
 }
 
 val dataModule = module {
-    single<UserRepository> { UserRepositoryImpl(get()) }
+    single<UserRepository> { UserRepositoryImpl(get(), get()) }
     single<StackOverflowApiService> {
         Retrofit.Builder()
             .baseUrl("https://api.stackexchange.com/2.3/")
@@ -37,4 +39,5 @@ val dataModule = module {
 
 val platformModule = module {
     single<ImageLoader> { CoilImageLoader() }
+    single<StringDecoder> { AndroidStringDecoder() }
 }

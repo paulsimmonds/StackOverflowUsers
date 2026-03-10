@@ -10,9 +10,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -32,10 +36,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.magictorch.stackoverflowtest.R
 import com.magictorch.stackoverflowtest.domain.model.User
 import com.magictorch.stackoverflowtest.presentation.image.ImageLoader
+import com.magictorch.stackoverflowtest.presentation.userlist.UserListEvent
 import com.magictorch.stackoverflowtest.presentation.userlist.UserListUiState
 import com.magictorch.stackoverflowtest.presentation.userlist.UserListViewModel
 import com.magictorch.stackoverflowtest.ui.theme.StackoverflowtestTheme
-import kotlinx.serialization.Serializable
 import org.koin.compose.koinInject
 
 @Composable
@@ -50,8 +54,7 @@ fun UserListScreen(
     UserListContent(
         uiState = uiState,
         searchQuery = searchQuery,
-        onSearchQueryChange = viewModel::onSearchQueryChange,
-        onRefreshClick = viewModel::loadUsers,
+        onEvent = viewModel::onEvent,
         onNavigateToUserDetail = onNavigateToUserDetail,
         imageLoader = imageLoader
     )
@@ -62,8 +65,7 @@ fun UserListScreen(
 fun UserListContent(
     uiState: UserListUiState,
     searchQuery: String,
-    onSearchQueryChange: (String) -> Unit,
-    onRefreshClick: () -> Unit,
+    onEvent: (UserListEvent) -> Unit,
     onNavigateToUserDetail: (Int) -> Unit,
     imageLoader: ImageLoader,
 ) {
@@ -89,22 +91,32 @@ fun UserListContent(
             ) {
                 OutlinedTextField(
                     value = searchQuery,
-                    onValueChange = onSearchQueryChange,
+                    onValueChange = { onEvent(UserListEvent.QueryChanged(it)) },
                     modifier = Modifier.weight(1f),
-                    label = { Text("Search by name") },
+                    label = { Text(stringResource(R.string.search_by_name)) },
                     singleLine = true,
+                    trailingIcon = {
+                        if (searchQuery.isNotEmpty()) {
+                            IconButton(onClick = {
+                                focusManager.clearFocus()
+                                onEvent(UserListEvent.ClearClicked)
+                            }) {
+                                Icon(Icons.Default.Clear, contentDescription = "Clear search")
+                            }
+                        }
+                    },
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                     keyboardActions = KeyboardActions(
                         onSearch = {
                             focusManager.clearFocus()
-                            onRefreshClick()
+                            onEvent(UserListEvent.SearchClicked)
                         }
                     )
                 )
                 Button(
                     onClick = {
                         focusManager.clearFocus()
-                        onRefreshClick()
+                        onEvent(UserListEvent.SearchClicked)
                     },
                     modifier = Modifier.padding(start = 8.dp)
                 ) {
@@ -127,7 +139,8 @@ fun UserListContent(
                         items(uiState.users, key = { it.id }) { user ->
                             UserListItem(
                                 user = user,
-                                onNavigateToUserDetail = onNavigateToUserDetail, imageLoader = imageLoader
+                                onNavigateToUserDetail = onNavigateToUserDetail,
+                                imageLoader = imageLoader
                             )
                         }
                     }
@@ -141,15 +154,10 @@ fun UserListContent(
                         Text(text = uiState.message)
                     }
                 }
-
-                else -> {}
             }
         }
     }
 }
-
-@Serializable
-object UserListRoute
 
 class UiStatePreviewProvider : PreviewParameterProvider<UserListUiState> {
     override val values = sequenceOf(
@@ -177,8 +185,7 @@ private fun UserListScreenSuccessPreview(
         UserListContent(
             uiState = uiState,
             searchQuery = "",
-            onSearchQueryChange = {},
-            onRefreshClick = {},
+            onEvent = {},
             onNavigateToUserDetail = {},
             imageLoader = FakeImageLoader()
         )

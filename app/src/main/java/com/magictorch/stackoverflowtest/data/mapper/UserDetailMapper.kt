@@ -3,11 +3,13 @@ package com.magictorch.stackoverflowtest.data.mapper
 import com.magictorch.stackoverflowtest.data.dto.user.UserResponse
 import com.magictorch.stackoverflowtest.domain.model.BadgeCounts
 import com.magictorch.stackoverflowtest.domain.model.UserDetail
+import com.magictorch.stackoverflowtest.domain.util.StringDecoder
+import com.magictorch.stackoverflowtest.util.asEpochMilliseconds
 
-fun UserResponse.toDetailDomain(): UserDetail {
+fun UserResponse.toDetailDomain(stringDecoder: StringDecoder): UserDetail {
     return UserDetail(
         id = this.userId,
-        name = this.displayName,
+        name = stringDecoder.decodeHtml(this.displayName),
         reputation = this.reputation,
         profileImageUrl = this.profileImage,
         location = this.location,
@@ -17,6 +19,6 @@ fun UserResponse.toDetailDomain(): UserDetail {
             silver = this.badgeCounts.silver,
             bronze = this.badgeCounts.bronze
         ),
-        creationDate = this.creationDate.toLong() * 1000 // Convert to milliseconds
+        creationDate = this.creationDate.asEpochMilliseconds
     )
 }

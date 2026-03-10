@@ -22,10 +22,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.magictorch.stackoverflowtest.R
+import com.magictorch.stackoverflowtest.domain.model.BadgeCounts
+import com.magictorch.stackoverflowtest.domain.model.UserDetail
 import com.magictorch.stackoverflowtest.presentation.image.ImageLoader
+import com.magictorch.stackoverflowtest.presentation.userlist.composable.FakeImageLoader
+import com.magictorch.stackoverflowtest.ui.theme.StackoverflowtestTheme
 import org.koin.compose.koinInject
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -155,5 +162,39 @@ fun UserDetailContent(
                 else -> {}
             }
         }
+    }
+}
+
+class UserDetailUiStateProvider : PreviewParameterProvider<UserDetailUiState> {
+    override val values = sequenceOf(
+        UserDetailUiState.Success(
+            user = UserDetail(
+                id = 1,
+                name = "Jon Skeet",
+                reputation = 1234567,
+                profileImageUrl = null,
+                location = "Reading, United Kingdom",
+                websiteUrl = "http://csharpindepth.com",
+                badgeCounts = BadgeCounts(gold = 1000, silver = 5000, bronze = 10000),
+                creationDate = 1222430705000L,
+                topTags = listOf("c#", "java", "android")
+            )
+        ),
+        UserDetailUiState.Loading,
+        UserDetailUiState.Error("An error occurred")
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun UserDetailPreview(
+    @PreviewParameter(UserDetailUiStateProvider::class) uiState: UserDetailUiState
+) {
+    StackoverflowtestTheme {
+        UserDetailContent(
+            uiState = uiState,
+            onBackClick = {},
+            imageLoader = FakeImageLoader()
+        )
     }
 }

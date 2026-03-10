@@ -1,10 +1,11 @@
 package com.magictorch.stackoverflowtest.domain.usecase
 
+import app.cash.turbine.test
 import com.magictorch.stackoverflowtest.domain.model.User
 import com.magictorch.stackoverflowtest.domain.repository.UserRepository
-import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.mockk
-import kotlinx.coroutines.flow.first
+import io.mockk.verify
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
@@ -22,40 +23,32 @@ class GetUserListUseCaseTest {
     )
 
     @Test
-    fun `invoke with empty query returns all users sorted alphabetically`() = runTest {
-        coEvery { userRepository.getUsers() } returns flowOf(sampleUsers)
+    fun `invoke with empty query calls repository with null and returns users sorted alphabetically by name`() = runTest {
+        every { userRepository.getUsers(null) } returns flowOf(sampleUsers)
 
-        val result = getUserListUseCase().first()
-
-        assertEquals(3, result.size)
-        assertEquals("Alice", result[0].name)
-        assertEquals("Bob", result[1].name)
-        assertEquals("Charlie", result[2].name)
-    }
-
-    @Test
-    fun `invoke with search query filters users case-insensitively`() = runTest {
-        coEvery { userRepository.getUsers() } returns flowOf(sampleUsers)
-
-        val result = getUserListUseCase("al").first()
-
-        assertEquals(1, result.size)
-        assertEquals("Alice", result[0].name)
-
-        val result2 = getUserListUseCase("BOB").first()
-        assertEquals(1, result2.size)
-        assertEquals("Bob", result2[0].name)
-    }
-
-    @Test
-    fun `invoke limits results to 20 users`() = runTest {
-        val manyUsers = List(30) { i ->
-            User(id = i, name = "User ${String.format("%02d", i)}", reputation = i, profileImageUrl = null)
+        getUserListUseCase("").test {
+            val result = awaitItem()
+            assertEquals(3, result.size)
+            assertEquals("Alice", result[0].name)
+            assertEquals("Bob", result[1].name)
+            assertEquals("Charlie", result[2].name)
+            awaitComplete()
         }
-        coEvery { userRepository.getUsers() } returns flowOf(manyUsers)
 
-        val result = getUserListUseCase().first()
+        verify { userRepository.getUsers(null) }
+    }
 
-        assertEquals(20, result.size)
+    @Test
+    fun `invoke with search query calls repository with query`() = runTest {
+        every { userRepository.getUsers("Alice") } returns flowOf(listOf(sampleUsers[1]))
+
+        getUserListUseCase("Alice").test {
+            val result = awaitItem()
+            assertEquals(1, result.size)
+            assertEquals("Alice", result[0].name)
+            awaitComplete()
+        }
+
+        verify { userRepository.getUsers("Alice") }
     }
 }
