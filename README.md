@@ -64,7 +64,7 @@ To ensure code quality and correctness, the project can be fully built and verif
 ./gradlew lint test assembleDebug
 ```
 
-API 21 support is maintained throughout. Where the Kotlin and Compose toolchain would otherwise generate bytecode incompatible with older devices, core library desugaring is enabled (`isCoreLibraryDesugaringEnabled = true`) to backport the necessary Java APIs. All dependency versions have been tested and pinned to the maximum version confirmed to work with `minSdk 21`.
+API 21 support is maintained throughout. All dependency versions have been tested and pinned to the maximum version confirmed to work with `minSdk 21`.
 
 ## 7. Future Improvements & Scalability
 
