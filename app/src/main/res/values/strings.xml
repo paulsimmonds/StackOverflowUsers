@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">stackoverflowtest</string>
+    <string name="app_name">Stack Users</string>
     <string name="user_profile_image_for">Profile image for %1$s</string>
     <string name="user_reputation">Reputation: %1$d</string>
     <string name="search_by_name">Search by name</string>
