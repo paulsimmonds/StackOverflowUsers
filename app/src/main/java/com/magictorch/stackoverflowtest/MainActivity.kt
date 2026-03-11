@@ -9,7 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.magictorch.stackoverflowtest.presentation.userdetail.UserDetailScreen
+import com.magictorch.stackoverflowtest.presentation.userdetail.composable.UserDetailScreen
 import com.magictorch.stackoverflowtest.presentation.userdetail.UserDetailViewModel
 import com.magictorch.stackoverflowtest.presentation.userlist.UserListViewModel
 import com.magictorch.stackoverflowtest.presentation.userlist.composable.UserListScreen

@@ -1,4 +1,4 @@
-package com.magictorch.stackoverflowtest.presentation.userdetail
+package com.magictorch.stackoverflowtest.presentation.userdetail.composable
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,6 +31,8 @@ import com.magictorch.stackoverflowtest.R
 import com.magictorch.stackoverflowtest.domain.model.BadgeCounts
 import com.magictorch.stackoverflowtest.domain.model.UserDetail
 import com.magictorch.stackoverflowtest.presentation.image.ImageLoader
+import com.magictorch.stackoverflowtest.presentation.userdetail.UserDetailUiState
+import com.magictorch.stackoverflowtest.presentation.userdetail.UserDetailViewModel
 import com.magictorch.stackoverflowtest.presentation.userlist.composable.FakeImageLoader
 import com.magictorch.stackoverflowtest.ui.theme.StackoverflowtestTheme
 import org.koin.compose.koinInject
