@@ -20,7 +20,6 @@ turbine = "1.2.1"
 coroutinesTest = "1.10.2"
 mockk = "1.14.9"
 kotlinxSerialization = "1.10.0"
-desugar-jdk-libs = "2.1.5"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -51,7 +50,6 @@ koin-test = { group = "io.insert-koin", name = "koin-test", version.ref = "koin"
 koin-test-junit4 = { group = "io.insert-koin", name = "koin-test-junit4", version.ref = "koin" }
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
-desugar-jdk-libs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar-jdk-libs" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
