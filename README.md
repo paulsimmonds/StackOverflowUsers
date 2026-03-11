@@ -13,7 +13,7 @@ The goal was to build a simple Android application in Kotlin that:
 
 ### Screen Specifications:
 
-1.  **Main Screen**: Displays a list of up to 20 users, sorted by reputation descending. Includes a manual search field to filter users by name via the external API, and a clear button to reset the results.
+1.  **Main Screen**: Displays a list of up to 20 users, sorted alphabetically by name ascending. Includes a manual search field to filter users by name via the external API, and a clear button to reset the results.
 2.  **Detail Screen**: Accessed by tapping a user. Displays the user's Avatar, Name, Reputation, Top Tags, Badges (Gold/Silver/Bronze), Location, and Creation Date.
 
 ## Core Principles
@@ -63,6 +63,8 @@ To ensure code quality and correctness, the project can be fully built and verif
 ```bash
 ./gradlew lint test assembleDebug
 ```
+
+API 21 support is maintained throughout. Where the Kotlin and Compose toolchain would otherwise generate bytecode incompatible with older devices, core library desugaring is enabled (`isCoreLibraryDesugaringEnabled = true`) to backport the necessary Java APIs. All dependency versions have been tested and pinned to the maximum version confirmed to work with `minSdk 21`.
 
 ## 7. Future Improvements & Scalability
 
