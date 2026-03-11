@@ -18,7 +18,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 val presentationModule = module {
     viewModel { UserListViewModel(get()) }
-    viewModel { UserDetailViewModel(get(), get()) }
+    viewModel { (userId: Int) -> UserDetailViewModel(get(), userId) }
 }
 
 val domainModule = module {

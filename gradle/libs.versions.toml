@@ -1,20 +1,26 @@
 [versions]
-agp = "8.13.2"
+agp = "9.1.0"
 kotlin = "2.3.10"
 coreKtx = "1.17.0"
 junit = "4.13.2"
 junitVersion = "1.3.0"
 espressoCore = "3.7.0"
-lifecycleRuntimeKtx = "2.9.3"
-activityCompose = "1.10.1"
-composeBom = "2025.05.01"
+#noinspection GradleDependency
+lifecycleRuntimeKtx = "2.9.4" # Maximum safe version for API 21
+#noinspection GradleDependency
+activityCompose = "1.11.0" # Maximum safe version for API 21
+#noinspection GradleDependency
+composeBom = "2025.11.01" # Maximum safe version for API 21
 koin = "4.1.1"
 retrofit = "3.0.0"
-navigationCompose = "2.9.3"
+#noinspection GradleDependency
+navigationCompose = "2.9.4" # Maximum safe version for API 21
 coil = "2.7.0"
 turbine = "1.2.1"
 coroutinesTest = "1.10.2"
 mockk = "1.14.9"
+kotlinxSerialization = "1.10.0"
+desugar-jdk-libs = "2.1.5"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -37,14 +43,18 @@ koin-androidx-compose = { group = "io.insert-koin", name = "koin-androidx-compos
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 retrofit-converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+androidx-navigation-testing = { group = "androidx.navigation", name = "navigation-testing", version.ref = "navigationCompose" }
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
 turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutinesTest" }
 koin-test = { group = "io.insert-koin", name = "koin-test", version.ref = "koin" }
 koin-test-junit4 = { group = "io.insert-koin", name = "koin-test-junit4", version.ref = "koin" }
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
+kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
+desugar-jdk-libs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar-jdk-libs" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

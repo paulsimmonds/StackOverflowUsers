@@ -1,6 +1,5 @@
 package com.magictorch.stackoverflowtest.presentation.userdetail
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.magictorch.stackoverflowtest.domain.usecase.GetUserDetailUseCase
@@ -13,11 +12,8 @@ import kotlinx.coroutines.flow.stateIn
 
 class UserDetailViewModel(
     getUserDetailUseCase: GetUserDetailUseCase,
-    savedStateHandle: SavedStateHandle,
+    userId: Int,
 ) : ViewModel() {
-
-    private val userId: Int = savedStateHandle.get<Int>("userId")
-        ?: throw IllegalArgumentException("userId required")
 
     val uiState: StateFlow<UserDetailUiState> = getUserDetailUseCase(userId)
         .map { userDetail -> UserDetailUiState.Success(userDetail) as UserDetailUiState }
