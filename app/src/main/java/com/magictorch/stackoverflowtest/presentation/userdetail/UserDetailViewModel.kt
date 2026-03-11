@@ -26,6 +26,6 @@ class UserDetailViewModel(
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = UserDetailUiState.Idle
+            initialValue = UserDetailUiState.Loading
         )
 }

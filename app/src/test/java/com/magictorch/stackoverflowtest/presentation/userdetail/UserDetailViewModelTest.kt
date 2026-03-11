@@ -51,17 +51,14 @@ class UserDetailViewModelTest {
     }
 
     @Test
-    fun `uiState initially emits Idle then Loading then Success`() = runTest {
+    fun `uiState initially emits Loading then Success`() = runTest {
         coEvery { mockGetUserDetailUseCase(1) } returns flowOf(sampleUser)
 
         val savedStateHandle = SavedStateHandle(mapOf("userId" to 1))
         val viewModel = UserDetailViewModel(mockGetUserDetailUseCase, savedStateHandle)
 
         viewModel.uiState.test {
-            // Initial value from stateIn
-            assertEquals(UserDetailUiState.Idle, awaitItem())
-            
-            // onStart emits Loading
+            // Initial value from stateIn is now Loading
             assertIs<UserDetailUiState.Loading>(awaitItem())
             
             advanceUntilIdle()
@@ -80,7 +77,6 @@ class UserDetailViewModelTest {
         val viewModel = UserDetailViewModel(mockGetUserDetailUseCase, savedStateHandle)
 
         viewModel.uiState.test {
-            assertEquals(UserDetailUiState.Idle, awaitItem())
             assertIs<UserDetailUiState.Loading>(awaitItem())
             
             advanceUntilIdle()

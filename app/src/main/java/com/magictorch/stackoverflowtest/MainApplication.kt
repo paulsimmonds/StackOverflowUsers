@@ -2,7 +2,6 @@ package com.magictorch.stackoverflowtest
 
 import android.app.Application
 import com.magictorch.stackoverflowtest.di.dataModule
-import com.magictorch.stackoverflowtest.di.dataStoreModule
 import com.magictorch.stackoverflowtest.di.domainModule
 import com.magictorch.stackoverflowtest.di.platformModule
 import com.magictorch.stackoverflowtest.di.presentationModule
@@ -15,7 +14,7 @@ class MainApplication : Application() {
 
         startKoin {
             androidContext(this@MainApplication)
-            modules(presentationModule, domainModule, dataModule, platformModule, dataStoreModule)
+            modules(presentationModule, domainModule, dataModule, platformModule)
         }
     }
 }

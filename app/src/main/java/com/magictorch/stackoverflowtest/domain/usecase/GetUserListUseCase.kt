@@ -8,6 +8,9 @@ import kotlinx.coroutines.flow.map
 class GetUserListUseCase(private val userRepository: UserRepository) {
     operator fun invoke(searchQuery: String = ""): Flow<List<User>> =
         userRepository.getUsers(searchQuery.ifBlank { null }).map { users ->
+            // Although we retrieve from the api sorted by reputation descending
+            // for more prominent users, business logic dictates we sort by name
+            // ascending
             users.sortedBy { it.name }
         }
 }
